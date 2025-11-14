@@ -1,85 +1,62 @@
-# Define a versão do Docker Compose. A versão 3.8 é moderna e recomendada.
 version: '3.8'
 
-# Define os serviços (contêineres) que compõem a nossa aplicação.
 services:
-
-  # Serviço 1: Aplicação PHP com Servidor Apache
+  # Serviço 1: Aplicação PHP
   app:
-    container_name: meu-app-php
-    # Constrói a imagem a partir do Dockerfile localizado no diretório atual.
-    # Assumimos que o Dockerfile ajustado (Passo 2) estará na raiz do projeto.
-    build: .
-    # Mapeia a porta 80 do contêiner para a porta 80 da sua máquina (host).
-    # Assim, você acessará a aplicação em http://localhost
+    image: mbrito19/meu-dashboard-php-mysql:v1
     ports:
       - "80:80"
-    # Mapeia o diretório atual do projeto para /var/www/html dentro do contêiner.
-    # Isso permite que alterações no código local reflitam instantaneamente no contêiner.
-    volumes:
-      - ./src:/var/www/html
-    # Garante que este serviço só será iniciado após o serviço 'db' estar pronto.
-    depends_on:
-      - db
-    # Define a rede que este serviço usará para se comunicar com os outros.
     networks:
       - app-network
+    deploy:
+      # A tarefa da Aula 10 pedia 5 réplicas
+      replicas: 5
+      restart_policy:
+        condition: on-failure
 
-  # Serviço 2: Banco de Dados MySQL
+  # Serviço 2: Banco de Dados MariaDB
   db:
-    container_name: meu-banco-mysql
-    # Utiliza a imagem oficial do MySQL na versão 8.0 do Docker Hub.
-    image: mysql:8.0
-    # Garante que o contêiner reinicie automaticamente a menos que seja parado manualmente.
-    restart: unless-stopped
-    # Define as variáveis de ambiente para configurar o MySQL na primeira inicialização.
+    image: mariadb:10.6 
+    networks:
+      - app-network
     environment:
-      MYSQL_DATABASE: britinho
-      MYSQL_USER: user_britinho
-      MYSQL_PASSWORD: StrongPassword123
-      MYSQL_ROOT_PASSWORD: RootStrongPassword123
-    # Mapeia a porta 3306 do contêiner para a 3306 do host (útil para debug).
-    ports:
-      - "3306:3306"
-    # Mapeia um volume nomeado 'mysql_data' para persistir os dados do banco.
-    # Mapeia o script SQL inicial para o diretório de inicialização do MySQL.
+      MARIADB_DATABASE: britinho
+      MARIADB_USER: user_britinho
+      MARIADB_PASSWORD: StrongPassword123
+      MARIADB_ROOT_PASSWORD: RootStrongPassword123
+    configs:
+      - source: db-init-sql
+        target: /docker-entrypoint-initdb.d/init.sql
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    # Define a rede que este serviço usará.
-    networks:
-      - app-network
-    command:
-      - mysqld
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
 
-  # Serviço 3: phpMyAdmin para gerenciamento do banco
+  # Serviço 3: phpMyAdmin
   phpmyadmin:
-    container_name: meu-phpmyadmin
-    # Utiliza a imagem oficial do phpMyAdmin.
     image: phpmyadmin/phpmyadmin
-    restart: unless-stopped
-    # Mapeia a porta 80 do contêiner para a porta 8080 do host.
-    # Você acessará o phpMyAdmin em http://localhost:8080
     ports:
       - "8080:80"
-    # Variável de ambiente que informa ao phpMyAdmin qual host de banco de dados usar.
-    # 'db' é o nome do nosso serviço MySQL nesta rede.
     environment:
       PMA_HOST: db
-    # Garante que este serviço só será iniciado após o 'db'.
-    depends_on:
-      - db
-    # Define a rede que este serviço usará.
+      PMA_PORT: 3306
     networks:
       - app-network
+    deploy:
+      restart_policy:
+        condition: on-failure
 
-# Define as redes customizadas para a aplicação.
 networks:
   app-network:
-    driver: bridge
+    driver: overlay
 
-# Define os volumes nomeados para persistência de dados.
 volumes:
   mysql_data:
+
+configs:
+  db-init-sql:
+    external: true
