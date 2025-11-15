@@ -1,33 +1,84 @@
-/* Adicione estas classes ao seu style.css */
+/* Arquivo: style.css */
 
-/* Estilos de Mensagem (Alerta) */
+:root {
+    --primary-color: #007BFF;
+    --light-grey: #f8f9fa;
+    --dark-grey: #343a40;
+    --border-color: #dee2e6;
+    --shadow: 0 4px 8px rgba(0,0,0,0.1);
+    --success-bg: #d4edda;
+    --success-border: #c3e6cb;
+    --success-text: #155724;
+    --error-bg: #f8d7da;
+    --error-border: #f5c6cb;
+    --error-text: #721c24;
+    --warning-bg: #ffc107;
+    --warning-text: #333;
+    --danger-bg: #dc3545;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--light-grey);
+    color: var(--dark-grey);
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+h1 {
+    color: var(--dark-grey);
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 30px;
+    font-weight: 600;
+}
+
+/* --- Estilos de Alerta/Feedback --- */
+
 .alert {
     padding: 15px;
-    border-radius: 5px;
+    border-radius: 8px;
     margin-bottom: 20px;
     text-align: center;
     font-weight: 500;
+    border: 1px solid transparent;
 }
 
 .alert-error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+    background-color: var(--error-bg);
+    color: var(--error-text);
+    border-color: var(--error-border);
 }
 
 .alert-success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+    background-color: var(--success-bg);
+    color: var(--success-text);
+    border-color: var(--success-border);
 }
 
-/* Container do Formulário */
+/* --- Estilos do Formulário --- */
+
 .form-container {
     background-color: #fdfdfd;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 25px;
     margin-bottom: 30px;
+    /* Margem para a âncora de edição */
+    scroll-margin-top: 20px;
 }
 
 .form-container h3 {
@@ -47,63 +98,126 @@
 }
 
 .form-group input[type="text"],
-.form-group input[type="email"] {
+.form-group input[type="email"],
+.form-group input[type="tel"] {
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    box-sizing: border-box; /* Importante para o padding não quebrar o layout */
-    transition: border-color 0.3s ease;
+    box-sizing: border-box; /* Garante que o padding não quebre o layout */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .form-group input:focus {
     border-color: var(--primary-color);
     outline: none;
-    box-shadow: 0 0 5px rgba(0,123,255,0.2);
+    box-shadow: 0 0 0 3px rgba(0,123,255,0.15);
 }
 
-/* Botões do Formulário */
 .form-buttons {
     margin-top: 20px;
     display: flex;
-    gap: 10px; /* Espaço entre os botões */
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
 }
 
-.btn-primary {
-    background-color: var(--primary-color);
-    color: white;
+.btn-primary,
+.btn-cancel {
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 15px;
     font-weight: 500;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px; /* Espaço entre ícone e texto */
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
 }
 .btn-primary:hover {
     background-color: #0056b3;
+    transform: translateY(-2px);
 }
 
 .btn-cancel {
     background-color: #6c757d;
-    color: white;
-    padding: 10px 15px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 15px;
-    font-weight: 500;
-    transition: background-color 0.3s ease;
 }
 .btn-cancel:hover {
     background-color: #5a6268;
 }
 
+/* --- Estilos da Tabela --- */
 
-/* Célula de Ações da Tabela */
+h2 {
+    margin-top: 40px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 30px;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+}
+
+thead th {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+thead th:first-child { border-top-left-radius: 8px; }
+thead th:last-child { border-top-right-radius: 8px; }
+
+tbody tr {
+    transition: background-color 0.3s ease;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tbody tr:hover {
+    background-color: #e9ecef;
+}
+
+/* --- Estilos dos Botões de Ação da Tabela --- */
+
+.fa-solid {
+    margin-right: 8px;
+}
+/* Remove duplicidade de margem nos botões */
+.btn-primary .fa-solid,
+.btn-cancel .fa-solid,
+.btn-action .fa-solid {
+    margin-right: 0;
+}
+
+
 .actions-cell {
     display: flex;
     gap: 8px;
     align-items: center;
+    white-space: nowrap; /* Impede que os botões quebrem linha */
 }
 
 .btn-action {
@@ -117,37 +231,28 @@
     color: white;
     display: inline-flex;
     align-items: center;
+    gap: 5px;
+    transition: all 0.2s ease;
 }
 
-.btn-action i {
-    margin-right: 5px;
-}
-
-/* Botão Editar (Link) */
 .btn-edit {
-    background-color: #ffc107; /* Amarelo */
-    color: #333;
+    background-color: var(--warning-bg);
+    color: var(--warning-text);
 }
 .btn-edit:hover {
     background-color: #e0a800;
+    transform: scale(1.05);
 }
 
-/* Botão Excluir (Button) */
 .btn-delete {
-    background-color: #dc3545; /* Vermelho */
+    background-color: var(--danger-bg);
 }
 .btn-delete:hover {
     background-color: #c82333;
+    transform: scale(1.05);
 }
 
-/* Formulário de Exclusão */
 .delete-form {
-    margin: 0; /* Remove margem padrão do formulário */
+    margin: 0;
     display: inline-block;
-}
-
-h2 {
-    margin-top: 40px;
-    border-top: 1px solid var(--border-color);
-    padding-top: 30px;
 }
