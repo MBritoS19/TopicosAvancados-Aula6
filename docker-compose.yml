@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # Serviço 1: Aplicação PHP
   app:
     image: mbrito19/meu-dashboard-php-mysql:v1
     ports:
@@ -9,14 +8,17 @@ services:
     networks:
       - app-network
     deploy:
-      # A tarefa da Aula 10 pedia 5 réplicas
-      replicas: 5
-      restart_policy:
-        condition: on-failure
+      replicas: 5 # Aula 10: 5 réplicas
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+      placement:
+        constraints:
+          - node.role == worker # Aula 10: SÓ NOS WORKERS
 
-  # Serviço 2: Banco de Dados MariaDB
   db:
-    image: mariadb:10.6 
+    image: mariadb:10.6
     networks:
       - app-network
     environment:
@@ -30,13 +32,15 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     deploy:
+      replicas: 1 # Aula 10: Sem réplicas (significa 1)
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
       placement:
         constraints:
-          - node.role == manager
-      restart_policy:
-        condition: on-failure
+          - node.role == worker # Aula 10: SÓ NOS WORKERS
 
-  # Serviço 3: phpMyAdmin
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     ports:
@@ -47,8 +51,14 @@ services:
     networks:
       - app-network
     deploy:
-      restart_policy:
-        condition: on-failure
+      replicas: 2 # Aula 10: 2 réplicas
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+      placement:
+        constraints:
+          - node.role == worker # Aula 10: SÓ NOS WORKERS
 
 networks:
   app-network:
